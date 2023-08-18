@@ -81,7 +81,12 @@ cp -p build/devkit/result/*.tar.gz %{buildroot}%{_datadir}/%{name}/
 %check
 # check if jdk can be build using devkit
 mkdir devkit
+%ifarch x86_64
+# on x86_64 there are archives for both i386 and x86_64, unpack one for x86_64
+tar -C devkit --strip-components=1 -xf %{buildroot}%{_datadir}/%{name}/*x86_64*.tar.gz
+%else
 tar -C devkit --strip-components=1 -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
+%endif
 rm -rf build
 bash configure --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
 make images
