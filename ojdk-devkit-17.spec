@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-17
 Version: 0.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: OpenJDK devkit 17
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -44,6 +44,12 @@ sed -i 's;http://yum.oracle.com/repo/OracleLinux/OL7/6/base/$(ARCH)/;https://vau
 sed -i 's;wget -r;wget -r -e robots=off;g' make/devkit/Tools.gmk
 # better debugging (print corresponding log after failure)
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
+# Use package kernel-headers on all platforms (kernel-uek-headers seems to be oracle specific thing)
+sed -i 's;kernel-uek-headers;kernel-headers;g' make/devkit/Tools.gmk
+%ifarch s390x
+# Do not use ld.gold on s390x, as it causes build failure
+sed -i 's;--enable-gold=default;;g' make/devkit/Tools.gmk
+%endif
 
 %build
 pushd make/devkit
