@@ -65,7 +65,7 @@ cp -p build/devkit/result/*.tar.gz %{buildroot}%{_datadir}/%{name}/
 mkdir devkit
 tar -C devkit --strip-components=1 -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
 rm -rf build
-bash configure --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-17-openjdk
+bash configure --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-17-openjdk --disable-warnings-as-errors
 make images
 build/*/images/jdk/bin/java -version
 %endif
