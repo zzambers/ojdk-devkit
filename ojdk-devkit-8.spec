@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -43,8 +43,10 @@ cat Tools.gmk | sed -n  '/^RPM_LIST/,/^$/p' > dlrpms.mk
 echo 'ARCH := $(shell uname -m)' >> dlrpms.mk
 echo 'BASE_URL := https://archives.fedoraproject.org/pub/archive/fedora-secondary/releases/19/Everything/$(ARCH)/os/Packages/' >> dlrpms.mk
 %ifarch %{centos5_arches}
-# CentOS5 packages are only available on x86_64, i386
-sed -i 's;^BASE_URL :=.*;BASE_URL := https://vault.centos.org/5.11/os/$(ARCH)/CentOS/;g' dlrpms.mk
+# Use Centos6 as Centos5 has too old freetype (does not support LCD Filter)
+# needed since: https://github.com/openjdk/jdk8u/commit/3409a5b3b2d5d6b1ef0d3f0f861935b2b9d36993
+# CentOS6 packages are only available on x86_64, i386
+sed -i 's;^BASE_URL :=.*;BASE_URL := https://vault.centos.org/6.10/os/$(ARCH)/Packages/;g' dlrpms.mk
 %endif
 %ifarch %{centos7_altarches}
 # CentOS7 (altarch) packages are available on aarch64, ppc64, ppc64le arm
