@@ -30,9 +30,13 @@ OpenJDK devkit 8
 
 # fix mpc download link
 sed -i 's;http://www.multiprecision.org/mpc/download/;https://ftp.gnu.org/gnu/mpc/;g' make/devkit/Tools.gmk
+# fontconfig is in RPM_LIST (configure fails without it)
+sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
 
 # use CentOS packages with fallback to Fedora
 pushd make/devkit
+# Rpms are not downloaded automatically as part of devkit generation on JDK8 (unlike on newer JDKs)
+# extract RPM_LIST from Tools.gmk
 cat Tools.gmk | sed -n  '/^RPM_LIST/,/^$/p' > dlrpms.mk
 echo 'ARCH := $(shell uname -m)' >> dlrpms.mk
 echo 'BASE_URL := https://archives.fedoraproject.org/pub/archive/fedora-secondary/releases/19/Everything/$(ARCH)/os/Packages/' >> dlrpms.mk
