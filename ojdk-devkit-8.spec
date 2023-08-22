@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -100,7 +100,7 @@ tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
 rm -rf build
 bash configure --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
 make images
-build/*/images/jdk/bin/java -version
+build/*/images/j2sdk-image/bin/java -version
 
 %files
 %{_datadir}/%{name}
