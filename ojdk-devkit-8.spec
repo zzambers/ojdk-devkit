@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -30,6 +30,19 @@ OpenJDK devkit 8
 
 # fix mpc download link
 sed -i 's;http://www.multiprecision.org/mpc/download/;https://ftp.gnu.org/gnu/mpc/;g' make/devkit/Tools.gmk
+%if 0%{?rhel} > 7
+# versions of some tools are too old -> not buildable on rhel-8 (in particular gcc)
+# Update to newer versions from:
+# https://github.com/openjdk/jdk11u-dev/blob/d0f6931ab7f9e3ad30365abfa862958820035ee3/make/devkit/Tools.gmk#L92
+sed -i 's;binutils-2.24;binutils-2.30;g' make/devkit/Tools.gmk
+sed -i 's;gcc-4.8.2;gcc-7.3.0;g' make/devkit/Tools.gmk
+sed -i 's;ccache-3.1.9;ccache-3.3.6;g' make/devkit/Tools.gmk
+sed -i 's;mpfr-3.0.1;mpfr-3.1.5;g' make/devkit/Tools.gmk
+sed -i 's;gmp-4.3.2;gmp-6.1.2;g' make/devkit/Tools.gmk
+sed -i 's;mpc-1.0.1;mpc-1.0.3;g' make/devkit/Tools.gmk
+# newer versions not available as .tar.bz2
+sed -i 's;$(gcc_ver).tar.bz2;$(gcc_ver).tar.gz;g' make/devkit/Tools.gmk
+%endif
 # fontconfig is in RPM_LIST (configure fails without it)
 sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
 # better debugging (print corresponding log after failure)
