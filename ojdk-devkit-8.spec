@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -34,6 +34,8 @@ sed -i 's;http://www.multiprecision.org/mpc/download/;https://ftp.gnu.org/gnu/mp
 sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
 # better debugging (print corresponding log after failure)
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
+# also match noarch rpms
+sed -i 's;RPM_ARCHS :=;& noarch;g' make/devkit/Tools.gmk
 
 # use CentOS packages with fallback to Fedora
 pushd make/devkit
