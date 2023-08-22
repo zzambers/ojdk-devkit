@@ -58,10 +58,6 @@ echo 'download-rpms:' >> dlrpms.mk
 echo '	mkdir rpms' >> dlrpms.mk
 # trick from devkit of later jdks
 echo '	wget -r -e robots=off -P rpms -np -nd $(patsubst %%, -A "*%%*.rpm", $(RPM_LIST)) $(BASE_URL)' >> dlrpms.mk
-%ifarch x86_64
-# x86_64 devkit also wants i386 packages, x86_64 repo also contains these, but *-headers packages are missing (required for gcc build)
-# echo '	wget -r -e robots=off -P rpms -np -nd -A "*kernel-headers*.rpm" -A "*glibc-headers*.rpm" -A "*compat-glibc-headers*.rpm" https://vault.centos.org/5.11/os/i386/CentOS/' >> dlrpms.mk
-%endif
 cat dlrpms.mk
 make -f dlrpms.mk download-rpms
 %ifarch x86_64
