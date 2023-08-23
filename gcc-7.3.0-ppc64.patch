@@ -1,0 +1,15 @@
+X-Git-Url: https://gcc.gnu.org/git/?p=gcc.git;a=blobdiff_plain;f=libcpp%2Flex.c;h=b789686f1c499bfd6fe98861232346cc8562f919;hp=e5a0397f309995760429601fa204b6039dbe9c33;hb=ee6c0081c03330045b3d4cde8421cd1d3a459609;hpb=58c27d9e2d358f1bbb1981164f4b2d2aa2e62dce
+
+diff --git a/libcpp/lex.c b/libcpp/lex.c
+index e5a0397f3099..b789686f1c49 100644
+--- a/libcpp/lex.c
++++ b/libcpp/lex.c
+@@ -568,7 +568,7 @@ search_line_fast (const uchar *s, const uchar *end ATTRIBUTE_UNUSED)
+     {
+       vc m_nl, m_cr, m_bs, m_qm;
+ 
+-      data = *((const vc *)s);
++      data = __builtin_vec_vsx_ld (0, s);
+       s += 16;
+ 
+       m_nl = (vc) __builtin_vec_cmpeq(data, repl_nl);

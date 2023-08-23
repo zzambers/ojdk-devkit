@@ -5,13 +5,14 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
 License: GPLv2
 URL: http://openjdk.java.net/
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u382-ga.tar.gz
+Source1: gcc-7.3.0-ppc64.patch
 
 BuildRequires: make autoconf automake libtool gcc gcc-c++ wget glibc-devel texinfo tar
 %ifarch x86_64
@@ -42,6 +43,8 @@ sed -i 's;gmp-4.3.2;gmp-6.1.2;g' make/devkit/Tools.gmk
 sed -i 's;mpc-1.0.1;mpc-1.0.3;g' make/devkit/Tools.gmk
 # newer versions not available as .tar.bz2
 sed -i 's;$(gcc_ver).tar.bz2;$(gcc_ver).tar.gz;g' make/devkit/Tools.gmk
+# Fix build on ppc64le, see: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86162
+cp %{SOURCE1} make/devkit/gcc-7.3.0.patch
 %endif
 # fontconfig is in RPM_LIST (configure fails without it)
 sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
@@ -49,6 +52,10 @@ sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Too
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
 %ifnarch x86_64 %ix86
 sed -i "s;RPM_ARCHS :=.*;RPM_ARCHS := $(uname -m);g" make/devkit/Tools.gmk
+%ifnarch s390x
+# s390x build of gcc on f19 also needs s390 rpms (gnu/stubs-32.h from glibc-devel)
+sed -i 's;RPM_ARCHS :=;& s390;g' make/devkit/Tools.gmk
+%endif
 %endif
 # also match noarch rpms
 sed -i 's;RPM_ARCHS :=;& noarch;g' make/devkit/Tools.gmk
@@ -114,7 +121,16 @@ tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*x86_64*.tar.gz
 tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
 %endif
 rm -rf build
-bash configure --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
+SYSROOT_DIR="$( DEVKIT_ROOT="$(pwd)/devkit" ; host=$(uname -m)-unknown-linux-gnu ; . devkit/devkit.info ; echo "$DEVKIT_SYSROOT" )"
+bash configure \
+%ifnarch x86_64 %ix86
+--with-cups=${SYSROOT_DIR}/usr \
+--with-freetype-lib=${SYSROOT_DIR}/usr/lib64 \
+--with-freetype-include=${SYSROOT_DIR}/usr/include/freetype2 \
+--with-alsa=${SYSROOT_DIR}/usr \
+--with-fontconfig=${SYSROOT_DIR}/usr \
+%endif
+--with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
 make images
 build/*/images/j2sdk-image/bin/java -version
 
