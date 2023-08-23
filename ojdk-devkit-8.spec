@@ -47,6 +47,9 @@ sed -i 's;$(gcc_ver).tar.bz2;$(gcc_ver).tar.gz;g' make/devkit/Tools.gmk
 sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
 # better debugging (print corresponding log after failure)
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
+%ifnarch x86_64 %ix86
+sed -i "s;RPM_ARCHS :=.*;RPM_ARCHS := $(uname -m);g" make/devkit/Tools.gmk
+%endif
 # also match noarch rpms
 sed -i 's;RPM_ARCHS :=;& noarch;g' make/devkit/Tools.gmk
 
@@ -90,7 +93,11 @@ popd
 
 %build
 pushd make/devkit
-make RPM_DIR="$(pwd)/rpms" all tars
+make RPM_DIR="$(pwd)/rpms" \
+%ifnarch x86_64
+cpu=$(uname -m) platforms=$(uname -m)-unknown-linux-gnu \
+%endif
+all tars
 popd
 
 %install
