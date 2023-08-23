@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -121,14 +121,17 @@ tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*x86_64*.tar.gz
 tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
 %endif
 rm -rf build
-SYSROOT_DIR="$( DEVKIT_ROOT="$(pwd)/devkit" ; host=$(uname -m)-unknown-linux-gnu ; . devkit/devkit.info ; echo "$DEVKIT_SYSROOT" )"
+DEVKIT_ROOT="$(pwd)/devkit" host="$(uname -m)-unknown-linux-gnu" . devkit/devkit.info
+
+CC="$DEVKIT_TOOLCHAIN_PATH/gcc" \
+CXX="$DEVKIT_TOOLCHAIN_PATH/g++" \
 bash configure \
 %ifnarch x86_64 %ix86
---with-cups=${SYSROOT_DIR}/usr \
---with-freetype-lib=${SYSROOT_DIR}/usr/lib64 \
---with-freetype-include=${SYSROOT_DIR}/usr/include/freetype2 \
---with-alsa=${SYSROOT_DIR}/usr \
---with-fontconfig=${SYSROOT_DIR}/usr \
+--with-cups="${DEVKIT_SYSROOT}/usr" \
+--with-freetype-lib="${DEVKIT_SYSROOT}/usr/lib64" \
+--with-freetype-include="${DEVKIT_SYSROOT}/usr/include/freetype2" \
+--with-alsa="${DEVKIT_SYSROOT}/usr" \
+--with-fontconfig="${DEVKIT_SYSROOT}/usr" \
 %endif
 --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
 make images
