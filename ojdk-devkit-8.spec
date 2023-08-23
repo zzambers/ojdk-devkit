@@ -52,7 +52,7 @@ sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Too
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
 %ifnarch x86_64 %ix86
 sed -i "s;RPM_ARCHS :=.*;RPM_ARCHS := $(uname -m);g" make/devkit/Tools.gmk
-%ifnarch s390x
+%ifarch s390x
 # s390x build of gcc on f19 also needs s390 rpms (gnu/stubs-32.h from glibc-devel)
 sed -i 's;RPM_ARCHS :=;& s390;g' make/devkit/Tools.gmk
 %endif
