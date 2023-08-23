@@ -12,7 +12,7 @@ Summary: OpenJDK devkit 8
 License: GPLv2
 URL: http://openjdk.java.net/
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u382-ga.tar.gz
-Source1: https://raw.githubusercontent.com/zzambers/ojdk-devkit/master/gcc-7.3.0-ppc64.patch
+Source1: gcc-7.3.0-ppc64.patch
 
 BuildRequires: make autoconf automake libtool gcc gcc-c++ wget glibc-devel texinfo tar
 %ifarch x86_64
