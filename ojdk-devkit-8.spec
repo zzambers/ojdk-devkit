@@ -47,7 +47,7 @@ sed -i 's;$(gcc_ver).tar.bz2;$(gcc_ver).tar.gz;g' make/devkit/Tools.gmk
 cp %{SOURCE1} make/devkit/gcc-7.3.0.patch
 %endif
 # fontconfig is in RPM_LIST (configure fails without it)
-sed -i 's;RPM_LIST :=;RPM_LIST := fontconfig fontconfig-devel;g' make/devkit/Tools.gmk
+sed -i 's;RPM_LIST :=;& fontconfig fontconfig-devel zlib zlib-devel libpng libpng-devel bzip2-libs bzip2-devel;g' make/devkit/Tools.gmk
 # better debugging (print corresponding log after failure)
 sed -i -E 's#> ([$][(][@<]D[)]/log[.][a-z]*) 2>&1#& || { cat \1 ; false ; }#g' make/devkit/Tools.gmk
 %ifnarch x86_64 %ix86
@@ -113,8 +113,6 @@ cp -p build/devkit/result/*.tar.gz %{buildroot}%{_datadir}/%{name}/
 
 %check
 # check if jdk can be build using devkit
-%ifarch x86_64
-# check only x86_64 for now, need to investigate problems on other arches
 mkdir devkit
 %ifarch x86_64
 # on x86_64 there are archives for both i386 and x86_64, unpack one for x86_64
@@ -125,20 +123,15 @@ tar -C devkit -xf %{buildroot}%{_datadir}/%{name}/*.tar.gz
 rm -rf build
 DEVKIT_ROOT="$(pwd)/devkit" host="$(uname -m)-unknown-linux-gnu" . devkit/devkit.info
 
-CC="$DEVKIT_TOOLCHAIN_PATH/gcc" \
-CXX="$DEVKIT_TOOLCHAIN_PATH/g++" \
 bash configure \
 %ifnarch x86_64 %ix86
---with-cups="${DEVKIT_SYSROOT}/usr" \
 --with-freetype-lib="${DEVKIT_SYSROOT}/usr/lib64" \
 --with-freetype-include="${DEVKIT_SYSROOT}/usr/include/freetype2" \
---with-alsa="${DEVKIT_SYSROOT}/usr" \
---with-fontconfig="${DEVKIT_SYSROOT}/usr" \
 %endif
 --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
+[ -f config.log ] && cat config.log
 make images
 build/*/images/j2sdk-image/bin/java -version
-%endif
 
 %files
 %{_datadir}/%{name}
