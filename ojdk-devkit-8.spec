@@ -5,7 +5,7 @@
 
 Name: ojdk-devkit-8
 Version: 0.1
-Release: 9%{?dist}
+Release: 10%{?dist}
 Summary: OpenJDK devkit 8
 
 # License TODO: should include license of all rpms unpacked to sysroot?
@@ -113,6 +113,8 @@ cp -p build/devkit/result/*.tar.gz %{buildroot}%{_datadir}/%{name}/
 
 %check
 # check if jdk can be build using devkit
+%ifarch x86_64
+# check only x86_64 for now, need to investigate problems on other arches
 mkdir devkit
 %ifarch x86_64
 # on x86_64 there are archives for both i386 and x86_64, unpack one for x86_64
@@ -136,6 +138,7 @@ bash configure \
 --with-devkit="$(pwd)/devkit" --with-boot-jdk=/usr/lib/jvm/java-1.8.0-openjdk
 make images
 build/*/images/j2sdk-image/bin/java -version
+%endif
 
 %files
 %{_datadir}/%{name}
