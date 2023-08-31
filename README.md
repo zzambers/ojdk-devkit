@@ -17,3 +17,7 @@ mock -r epel-7-x86_64 --enable-network --rebuild --spec ojdk-devkit-11.spec --so
 ### Other
 - Package build does testing of devkit in `%check` phase by trying to build OpenJDK with it.
 - When package is installed archive with devkit is installed to `/usr/share/ojdk-devkit-*/*.tar.gz`.
+
+## Links
+- ojdk-devkit packages builds in [copr](https://copr.fedorainfracloud.org/coprs/zzambers/ojdk-devkit/monitor/)
+- modified openjdk portable packages using devkit ([builds in copr](https://copr.fedorainfracloud.org/coprs/zzambers/ojdk-devkit/monitor/), sources: [11](https://src.fedoraproject.org/fork/zzambers/rpms/java-11-openjdk-portable/tree/ojdk-devkit), [17](https://src.fedoraproject.org/fork/zzambers/rpms/java-17-openjdk-portable/tree/ojdk-devkit))
